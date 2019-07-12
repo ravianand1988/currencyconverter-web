@@ -115,6 +115,10 @@
 import { required, minLength, between } from 'vuelidate/lib/validators'
 
 export default {
+  name: 'HelloWorld',
+  metaInfo: {
+    title: 'FactSet Currency Converter - ravi'
+  },
   data () {
     return {
       name: '',

@@ -5,6 +5,10 @@ import Home from './views/Home.vue'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
+  caseSensitive: false,
+  linkActiveClass: 'active', // active class for non-exact links.
+  linkExactActiveClass: 'active', // active class for *exact* links
   routes: [
     {
       path: '/',
