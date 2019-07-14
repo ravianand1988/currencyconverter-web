@@ -1,3 +1,17 @@
 {
-  "hello": "Hello world"
+  "hello": "Hello world",
+  "common": {
+    "english": "English",
+    "german": "German",
+    "equals": "equals",
+    "currencyConverter": "Currency Converter"
+  },
+  "currencies": {
+    "USD": "United States Dollar",
+    "CAD": "Canadian Dollar",
+    "EUR": "Euro",
+    "CHF": "Swiss Franc",
+    "GBP": "British Pound Sterling",
+    "JPY": "Japanese Yen"
+  }
 }
