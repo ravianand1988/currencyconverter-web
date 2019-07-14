@@ -1,9 +1,9 @@
 <template>
-  <v-container class="white v-card">
+  <v-container class="v-card" :class="parentClasses">
     <v-layout class="pl-3">
-      <v-flex class="text-xs-left">
+      <v-flex>
         <div class="grey--text subheading">
-          <span>1</span><span> {{summary.source}}</span> {{$t('common.equals')}}
+          <span>1 {{summary.base}} {{$t('common.equals')}} </span>
         </div>
         <div class="display-2">
           <i18n-n :value="summary.rate"/>
@@ -14,80 +14,76 @@
         </div>
       </v-flex>
     </v-layout>
-    <div>
-      <v-form>
-        <v-container>
-          <v-layout row wrap>
-            <v-flex xs12 sm6>
-              <v-text-field v-model.trim="valueA" @keyup="calculate" @keypress="validate" single-line outline/>
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-select v-model="selectedCurrencyA" @change="calculate" :items="currencyChoices" outline></v-select>
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-text-field v-model.trim="valueB" @keyup="calculateInput2" @keypress="validate" single-line outline/>
-            </v-flex>
-            <v-flex xs12 sm6>
-              <v-select v-model="selectedCurrencyB" @change="calculate" :items="currencyChoices" outline></v-select>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-form>
-    </div>
+    <v-form>
+      <v-container>
+        <v-layout row wrap>
+          <v-flex xs12 sm6>
+            <v-text-field single-line outline
+                          v-model.trim="valueA"
+                          :class="inputClasses"
+                          @keyup="calculate"
+                          @keypress="validate"/>
+          </v-flex>
+          <v-flex xs12 sm6>
+            <v-select outline
+                      v-model="baseCurrencyCode"
+                      :class="selectClasses"
+                      :items="currencyChoices"
+                      @change="calculate"/>
+          </v-flex>
+          <v-flex xs12 sm6>
+            <v-text-field single-line outline
+                          v-model.trim="valueB"
+                          :class="inputClasses"
+                          @keyup="calculateInput2"
+                          @keypress="validate"/>
+          </v-flex>
+          <v-flex xs12 sm6>
+            <v-select outline
+                      v-model="targetCurrencyCode"
+                      :class="selectClasses"
+                      :items="currencyChoices"
+                      @change="calculate"/>
+
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-form>
   </v-container>
 </template>
 
 <script>
-
-import '../plugins/moneySetup'
+import i18n from '../plugins/i18n'
+import money from '../plugins/moneySetup'
 import fx from 'money'
 
 export default {
   name: 'CurrencyConverter',
+  props: {
+    data: {
+      type: Object,
+      require: true
+    },
+    language: {
+      type: String,
+      default: 'de'
+    },
+    parentClasses: {
+      type: Array
+    },
+    inputClasses: {
+      type: Array
+    },
+    selectClasses: {
+      type: Array
+    }
+  },
   data () {
     return {
-      selectedCurrencyA: 'EUR',
-      selectedCurrencyB: 'USD',
-      valueA: this.$n(fx.rates['EUR']),
-      valueB: this.$n(fx.rates['USD']),
-      currencies: [
-        {
-          name: 'United States Dollar',
-          code: 'USD',
-          name_plural: 'US dollars',
-          rate: 1.2897
-        },
-        {
-          name: 'Canadian Dollar',
-          code: 'CAD',
-          name_plural: 'Canadian dollars',
-          rate: 1.2897
-        },
-        {
-          name: 'Euro',
-          code: 'EUR',
-          name_plural: 'euros',
-          rate: 1.2897
-        },
-        {
-          name: 'Swiss Franc',
-          code: 'CHF',
-          name_plural: 'Swiss francs',
-          rate: 1.2897
-        },
-        {
-          name: 'British Pound Sterling',
-          code: 'GBP',
-          name_plural: 'British pounds sterling',
-          rate: 1.2897
-        },
-        {
-          name: 'Japanese Yen',
-          code: 'JPY',
-          name_plural: 'Japanese yen',
-          rate: 1.2897
-        }
-      ]
+      baseCurrencyCode: this.data.baseCurrencyCode,
+      targetCurrencyCode: this.data.targetCurrencyCode,
+      valueA: this.data.valueA,
+      valueB: 0
     }
   },
   computed: {
@@ -96,22 +92,27 @@ export default {
     },
     summary () {
       return {
-        source: this.$t('currencies')[this.selectedCurrencyA],
-        rate: parseFloat((fx.rates[this.selectedCurrencyB] / fx.rates[this.selectedCurrencyA]).toFixed(3)),
-        target: this.$t('currencies')[this.selectedCurrencyB],
+        base: this.$t('currencies')[this.baseCurrencyCode],
+        rate: parseFloat((fx.rates[this.targetCurrencyCode] / fx.rates[this.baseCurrencyCode]).toFixed(3)),
+        target: this.$t('currencies')[this.targetCurrencyCode],
         now: this.moment.utc().format('DD MMMM, H:mm:ss UTC')
       }
     }
   },
   methods: {
+    init () {
+      i18n.locale = this.language
+      money.setupFx(this.data.currencies, this.data.baseCurrencyCode, this.data.targetCurrencyCode)
+      this.calculate()
+    },
     swapSelection (sender, newCurrency, oldCurrency) {
-      if (this.selectedCurrencyA === this.selectedCurrencyB) {
+      if (this.baseCurrencyCode === this.targetCurrencyCode) {
         switch (sender) {
-          case 'selectedCurrencyA':
-            this.selectedCurrencyB = oldCurrency
+          case 'baseCurrencyCode':
+            this.targetCurrencyCode = oldCurrency
             break
-          case 'selectedCurrencyB':
-            this.selectedCurrencyA = oldCurrency
+          case 'targetCurrencyCode':
+            this.baseCurrencyCode = oldCurrency
             break
         }
         this.calculate()
@@ -119,14 +120,14 @@ export default {
     },
     calculate () {
       this.valueB = this.$n(fx.convert(this.valueA, {
-        from: this.selectedCurrencyA,
-        to: this.selectedCurrencyB
+        from: this.baseCurrencyCode,
+        to: this.targetCurrencyCode
       }).toFixed(4))
     },
     calculateInput2 () {
       this.valueA = this.$n(fx.convert(this.valueB, {
-        from: this.selectedCurrencyB,
-        to: this.selectedCurrencyA
+        from: this.targetCurrencyCode,
+        to: this.baseCurrencyCode
       }).toFixed(4))
     },
     validate (event) {
@@ -137,12 +138,15 @@ export default {
       }
     }
   },
+  created () {
+    this.init()
+  },
   watch: {
-    selectedCurrencyA (newCurrency, oldCurrency) {
-      this.swapSelection('selectedCurrencyA', newCurrency, oldCurrency)
+    baseCurrencyCode (newCurrency, oldCurrency) {
+      this.swapSelection('baseCurrencyCode', newCurrency, oldCurrency)
     },
-    selectedCurrencyB (newCurrency, oldCurrency) {
-      this.swapSelection('selectedCurrencyB', newCurrency, oldCurrency)
+    targetCurrencyCode (newCurrency, oldCurrency) {
+      this.swapSelection('targetCurrencyCode', newCurrency, oldCurrency)
     }
   }
 }
