@@ -1,13 +1,15 @@
 <template>
-  <HelloWorld/>
+  <v-container class="text-xs-center">
+    <currency-converter/>
+  </v-container>
 </template>
 
 <script>
-import HelloWorld from '../components/HelloWorld'
+import CurrencyConverter from '@/components/CurrencyConverter'
 
 export default {
   components: {
-    HelloWorld
+    CurrencyConverter
   }
 }
 </script>
