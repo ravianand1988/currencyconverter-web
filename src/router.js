@@ -11,12 +11,12 @@ export default new Router({
   linkExactActiveClass: 'active', // active class for *exact* links
   routes: [
     {
-      path: '/',
+      path: '/home',
       name: 'home',
       component: Home
     },
     {
-      path: '/about',
+      path: '/',
       name: 'about',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
