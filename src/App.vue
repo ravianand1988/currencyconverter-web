@@ -1,10 +1,12 @@
 <template>
-  <v-app id="app">
+  <div id="app">
+    <!--  <v-app id="app">-->
     <!--    <toolbar/>-->
-    <v-content>
-      <router-view/>
-    </v-content>
-  </v-app>
+    <!--    <v-content>-->
+    <router-view/>
+    <!--    </v-content>-->
+    <!--  </v-app>-->
+  </div>
 </template>
 
 <script>
@@ -12,10 +14,10 @@
 
 export default {
   name: 'App',
-  metaInfo: {
-    title: 'Currency Converter',
-    titleTemplate: '%s | Currency Converter'
-  },
+  // metaInfo: {
+  //   title: 'Currency Converter',
+  //   titleTemplate: '%s | Currency Converter'
+  // },
   components: {
     // Toolbar
   }

@@ -1,8 +1,8 @@
 <template>
-  <v-container>
+  <div>
     <h1 class="display-2"> Currency Converter...</h1>
     <!--    <currency-converter :data="dataCurrencyConverter" class="white"/>-->
-  </v-container>
+  </div>
 </template>
 
 <script>
