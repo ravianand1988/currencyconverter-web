@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <toolbar/>
+    <!--    <toolbar/>-->
     <v-content>
       <router-view/>
     </v-content>
@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import Toolbar from './components/Toolbar'
+// import Toolbar from './components/Toolbar'
 
 export default {
   name: 'App',
@@ -17,7 +17,7 @@ export default {
     titleTemplate: '%s | Currency Converter'
   },
   components: {
-    Toolbar
+    // Toolbar
   }
 }
 </script>
